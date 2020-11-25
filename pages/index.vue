@@ -8,7 +8,8 @@
       <div class="d-flex flex-row justify-content-center w-100">
         <div v-for="(msg, index) in dataSet" :key="index" class="d-flex flex-column bg-primary text-white mx-2  w-25">
           <span>{{msg.text}} - {{new Date(msg.createdat.seconds * 1000)}}</span>
-          <b-button @click="set(msg)">update</b-button>
+          <b-button @click="set(msg)" variant="primary">update</b-button>
+          <b-button @click="deleteMsg(msg)" variant="danger">Delete</b-button>
         </div>
       </div>
 
@@ -61,6 +62,16 @@ export default Vue.extend({
       const messageRef = this.$fire.firestore.collection('messages').doc(data.id);
       try {
         await messageRef.set(data);
+      } catch (e) {
+        alert(e);
+      }
+    },
+    async deleteMsg(msg) {
+      const data = {...msg};
+      data.createdat = new Date();
+      const messageRef = this.$fire.firestore.collection('messages').doc(data.id);
+      try {
+        await messageRef.delete();
       } catch (e) {
         alert(e);
       }
