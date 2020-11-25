@@ -5,6 +5,13 @@
       <h1 class="title">
         {{title}}
       </h1>
+      <div class="d-flex flex-row justify-content-center w-100">
+        <div v-for="(msg, index) in dataSet" :key="index" class="d-flex flex-column bg-primary text-white mx-2  w-25">
+          <span>{{msg.text}} - {{new Date(msg.createdat.seconds * 1000)}}</span>
+          <b-button @click="set(msg)">update</b-button>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -28,14 +35,36 @@ export default Vue.extend({
       try {
         messageRef.get().then(res => {
           res.forEach(doc => {
-            console.log('abcd', doc.data());
-            this.dataSet.push(doc.data());
+            const data = doc.data();
+            data.id = doc.id;
+            console.log('abcd', data);
+            this.dataSet.push(data);
           });
         });
       } catch (e) {
         alert(e);
       }
-    }
+    },
+    async add() {
+      const messageRef = this.$fire.firestore.collection('messages');
+      try {
+        messageRef.add({text: 'lol', createdat: new Date()}).then(res => {
+          console.log('abcd', res);
+        });
+      } catch (e) {
+        alert(e);
+      }
+    },
+    async set(msg) {
+      const data = {...msg};
+      data.createdat = new Date();
+      const messageRef = this.$fire.firestore.collection('messages').doc(data.id);
+      try {
+        await messageRef.set(data);
+      } catch (e) {
+        alert(e);
+      }
+    },
   }
 })
 </script>
