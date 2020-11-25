@@ -16,8 +16,27 @@ export default Vue.extend({
   data: () => {
     return {
       title: 'dungon crawler',
+      dataSet: []
     };
   },
+  beforeMount() {
+    this.readFromFirestore();
+  },
+  methods: {
+    async readFromFirestore() {
+      const messageRef = this.$fire.firestore.collection('messages');
+      try {
+        messageRef.get().then(res => {
+          res.forEach(doc => {
+            console.log('abcd', doc.data());
+            this.dataSet.push(doc.data());
+          });
+        });
+      } catch (e) {
+        alert(e);
+      }
+    }
+  }
 })
 </script>
 
